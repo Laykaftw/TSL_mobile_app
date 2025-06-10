@@ -10,8 +10,11 @@ import {
   Platform,
 } from 'react-native';
 import { FileText } from 'lucide-react-native';
+import { useTheme } from '@/context/ThemeContext';
+import { typography, spacing, borderRadius, shadows } from '@/utils/theme';
 
 export default function SignRequest() {
+  const { theme } = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -24,47 +27,69 @@ export default function SignRequest() {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.background }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <FileText size={32} color="#007AFF" />
-          <Text style={styles.title}>Sign Request</Text>
+          <FileText size={32} color={theme.primary} />
+          <Text style={[styles.title, { color: theme.text }]}>Sign Request</Text>
         </View>
 
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Full Name</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Full Name</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.card,
+                  borderColor: theme.border,
+                  color: theme.text,
+                }
+              ]}
               value={name}
               onChangeText={setName}
               placeholder="Enter your full name"
-              placeholderTextColor="#666"
+              placeholderTextColor={theme.textSecondary}
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Email</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  backgroundColor: theme.card,
+                  borderColor: theme.border,
+                  color: theme.text,
+                }
+              ]}
               value={email}
               onChangeText={setEmail}
               placeholder="Enter your email"
-              placeholderTextColor="#666"
+              placeholderTextColor={theme.textSecondary}
               keyboardType="email-address"
               autoCapitalize="none"
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Message</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Message</Text>
             <TextInput
-              style={[styles.input, styles.messageInput]}
+              style={[
+                styles.input,
+                styles.messageInput,
+                {
+                  backgroundColor: theme.card,
+                  borderColor: theme.border,
+                  color: theme.text,
+                }
+              ]}
               value={message}
               onChangeText={setMessage}
               placeholder="Enter your message"
-              placeholderTextColor="#666"
+              placeholderTextColor={theme.textSecondary}
               multiline
               numberOfLines={4}
               textAlignVertical="top"
@@ -72,7 +97,7 @@ export default function SignRequest() {
           </View>
 
           <TouchableOpacity 
-            style={styles.button}
+            style={[styles.button, { backgroundColor: theme.primary }, shadows.medium]}
             onPress={handleSubmit}
           >
             <Text style={styles.buttonText}>Submit Request</Text>
@@ -86,58 +111,53 @@ export default function SignRequest() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
+    padding: spacing.l,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 30,
-    paddingTop: 20,
+    marginBottom: spacing.xl,
+    paddingTop: spacing.l,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 12,
-    color: '#000',
+    fontSize: typography.fontSizes.xl,
+    fontFamily: typography.fontFamily.bold,
+    marginLeft: spacing.m,
   },
   form: {
     flex: 1,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: spacing.l,
   },
   label: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#333',
-    fontWeight: '500',
+    fontSize: typography.fontSizes.m,
+    marginBottom: spacing.s,
+    fontFamily: typography.fontFamily.medium,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#f8f8f8',
+    borderRadius: borderRadius.medium,
+    padding: spacing.m,
+    fontSize: typography.fontSizes.m,
+    fontFamily: typography.fontFamily.regular,
   },
   messageInput: {
     height: 120,
     textAlignVertical: 'top',
   },
   button: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
+    padding: spacing.m,
+    borderRadius: borderRadius.medium,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: spacing.l,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: typography.fontSizes.m,
+    fontFamily: typography.fontFamily.medium,
   },
 });

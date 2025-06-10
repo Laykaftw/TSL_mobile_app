@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Modal, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Modal, Alert, ActivityIndicator, Dimensions, Animated } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useTheme } from '@/context/ThemeContext';
@@ -10,6 +10,7 @@ import * as Speech from 'expo-speech';
 import { typography, spacing, borderRadius, shadows } from '@/utils/theme';
 import { Video, ResizeMode } from 'expo-av';
 import { signsMapping, signTranslations } from '@/utils/signsMapping';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface SignPrediction {
   text: string;
@@ -24,6 +25,46 @@ interface PhraseResult {
   frenchPhrase: string;
 }
 
+const LandscapeGuide = () => {
+  const { theme } = useTheme();
+  const rotateAnim = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    const startAnimation = () => {
+      Animated.sequence([
+        Animated.timing(rotateAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(rotateAnim, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start(() => startAnimation());
+    };
+
+    startAnimation();
+  }, []);
+
+  const spin = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '90deg'],
+  });
+
+  return (
+    <View style={styles.landscapeGuide}>
+      <Animated.View style={[styles.phoneIcon, { transform: [{ rotate: spin }] }]}>
+        <Ionicons name="phone-portrait" size={40} color={theme.text} />
+      </Animated.View>
+      <Text style={[styles.landscapeText, { color: theme.text }]}>
+        Please rotate your device to landscape mode
+      </Text>
+    </View>
+  );
+};
+
 export default function VideoUploadScreen() {
   const { theme } = useTheme();
   const [video, setVideo] = useState<string | null>(null);
@@ -32,6 +73,7 @@ export default function VideoUploadScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
   const [isRecording, setIsRecording] = useState(false);
+  const [showLandscapeGuide, setShowLandscapeGuide] = useState(true);
   const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -39,9 +81,9 @@ export default function VideoUploadScreen() {
   const requestPermissions = async () => {
     if (Platform.OS !== 'web') {
       try {
-      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-      const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-      
+        const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+        const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+        
         if (!cameraPermission.granted) {
           Alert.alert(
             'Camera Permission Required',
@@ -82,7 +124,7 @@ export default function VideoUploadScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [16, 9],
         quality: 1,
         videoMaxDuration: 15,
         videoExportPreset: ImagePicker.VideoExportPreset.HighestQuality,
@@ -103,6 +145,7 @@ export default function VideoUploadScreen() {
   
   // Record video using camera
   const recordVideo = async () => {
+    setShowLandscapeGuide(false); // Hide guide when starting to record
     const hasPermission = await requestPermissions();
     
     if (!hasPermission) {
@@ -114,11 +157,12 @@ export default function VideoUploadScreen() {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [16, 9],
         quality: 1,
         videoMaxDuration: 15,
-        videoExportPreset: ImagePicker.VideoExportPreset.HighestQuality,
-        videoQuality: 1,
+        videoExportPreset: Platform.OS === 'ios' || Platform.OS === 'web'
+                             ? ImagePicker.VideoExportPreset.H264_1280x720 // Use specific 1280x720 preset
+                             : ImagePicker.VideoExportPreset.HighestQuality, // Fallback for other platforms
       });
       
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -152,6 +196,7 @@ export default function VideoUploadScreen() {
     setModalVisible(false);
     setIsRecording(false);
     setIsPlaying(false);
+    setShowLandscapeGuide(true); // Show guide again when resetting
   };
 
   // Process video with AI
@@ -280,6 +325,35 @@ export default function VideoUploadScreen() {
     </View>
   );
 
+  // Update the permission check
+  if (!mediaPermission) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.primary} />
+        <Text style={[styles.errorText, { color: theme.text }]}>
+          Checking permissions...
+        </Text>
+      </View>
+    );
+  }
+
+  if (!mediaPermission.granted) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <LandscapeGuide />
+        <Text style={[styles.errorText, { color: theme.text }]}>
+          Please grant camera permissions to use this feature
+        </Text>
+        <TouchableOpacity 
+          style={[styles.button, { backgroundColor: theme.primary }]}
+          onPress={requestPermissions}
+        >
+          <Text style={styles.buttonText}>Grant Permissions</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
@@ -326,6 +400,7 @@ export default function VideoUploadScreen() {
           </TouchableOpacity>
         ) : (
           <View style={styles.placeholderContent}>
+            {showLandscapeGuide && <LandscapeGuide />}
             <Camera size={48} color={theme.textSecondary} />
             <Text style={[styles.placeholderText, { color: theme.textSecondary }]}>
               No video selected
@@ -612,5 +687,31 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: typography.fontSizes.m,
     fontFamily: typography.fontFamily.medium,
+  },
+  landscapeGuide: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  phoneIcon: {
+    marginBottom: spacing.m,
+  },
+  landscapeText: {
+    fontSize: typography.fontSizes.l,
+    fontFamily: typography.fontFamily.medium,
+    textAlign: 'center',
+    paddingHorizontal: spacing.l,
+  },
+  errorText: {
+    fontSize: typography.fontSizes.m,
+    fontFamily: typography.fontFamily.medium,
+    textAlign: 'center',
+    padding: spacing.l,
   },
 });

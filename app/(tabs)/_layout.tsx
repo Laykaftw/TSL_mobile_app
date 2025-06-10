@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import { Camera, Upload, BookOpenText, Calendar, MessageSquarePlus, Settings } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
@@ -37,9 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Translate',
-          tabBarIcon: ({ color, size }) => <Camera size={size} color={color} />,
-          headerShown: true,
+          href: null,
         }}
       />
       <Tabs.Screen

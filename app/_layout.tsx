@@ -24,7 +24,6 @@ export default function RootLayout() {
     'Roboto-Bold': Roboto_700Bold,
   });
   
-  const { isFirstLaunch } = useTheme();
   const colorScheme = useColorScheme();
 
   useEffect(() => {
@@ -32,15 +31,6 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
-  
-  useEffect(() => {
-    // Use a timeout to ensure the Root Layout is mounted before navigation
-    if (isFirstLaunch && fontsLoaded) {
-      setTimeout(() => {
-        router.replace('/onboarding');
-      }, 100);
-    }
-  }, [isFirstLaunch, fontsLoaded, router]);
 
   if (!fontsLoaded && !fontError) {
     return null;

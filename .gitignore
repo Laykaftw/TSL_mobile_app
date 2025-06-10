@@ -1,7 +1,13 @@
 # dependencies
 node_modules/
 assets/videos/*
-
+assets/videos/**/*
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.flv
+*.mkv
 
 # expo
 .expo/
@@ -35,3 +41,19 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 .qodo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build
+build/
+dist/
+out/
+
+# Cache
+.cache/
+.npm/
+.eslintcache
