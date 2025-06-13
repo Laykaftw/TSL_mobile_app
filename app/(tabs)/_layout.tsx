@@ -1,11 +1,13 @@
-import { Tabs, Redirect } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { Camera, Upload, BookOpenText, Calendar, MessageSquarePlus, Settings } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { typography } from '@/utils/theme';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function TabLayout() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   return (
     <Tabs
@@ -43,14 +45,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="video-upload"
         options={{
-          title: 'Upload',
+          title: t('video.upload'),
           tabBarIcon: ({ color }) => <Upload size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="daily-challenge"
         options={{
-          title: 'Challenge',
+          title: t('app.challenge'),
           tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
           headerShown: true,
         }}
@@ -58,7 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dictionary"
         options={{
-          title: 'Dictionary',
+          title: t('app.dictionary'),
           tabBarIcon: ({ color, size }) => <BookOpenText size={size} color={color} />,
           headerShown: true,
         }}
@@ -66,18 +68,18 @@ export default function TabLayout() {
       <Tabs.Screen
         name="sign-request"
         options={{
-          title: 'Request',
+          title: t('app.request'),
           tabBarIcon: ({ color, size }) => <MessageSquarePlus size={size} color={color} />,
           headerShown: true,
         }}
       />
-      {/* <Tabs.Screen
+      <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t('app.settings'),
           tabBarIcon: ({ color }) => <Settings size={24} color={color} />,
         }}
-      /> */}
+      />
     </Tabs>
   );
 }

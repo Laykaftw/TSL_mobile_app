@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Slot, Stack, useRouter } from 'expo-router';
+import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { 
@@ -9,14 +9,15 @@ import {
   Roboto_700Bold 
 } from '@expo-google-fonts/roboto';
 import { useColorScheme } from 'react-native';
-import { ThemeProvider, useTheme } from '@/context/ThemeContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import * as SplashScreen from 'expo-splash-screen';
+import { LanguageProvider } from '@/context/LanguageContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   useFrameworkReady();
-  const router = useRouter();
 
   const [fontsLoaded, fontError] = useFonts({
     'Roboto-Regular': Roboto_400Regular,
@@ -37,9 +38,13 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <Slot />
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <Slot />
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        </LanguageProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

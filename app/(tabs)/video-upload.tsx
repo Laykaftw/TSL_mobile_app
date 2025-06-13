@@ -11,6 +11,7 @@ import { typography, spacing, borderRadius, shadows } from '@/utils/theme';
 import { Video, ResizeMode } from 'expo-av';
 import { signsMapping, signTranslations } from '@/utils/signsMapping';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface SignPrediction {
   text: string;
@@ -67,6 +68,7 @@ const LandscapeGuide = () => {
 
 export default function VideoUploadScreen() {
   const { theme } = useTheme();
+  const { t, isRTL } = useLanguage();
   const [video, setVideo] = useState<string | null>(null);
   const [prediction, setPrediction] = useState<PhraseResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -357,9 +359,9 @@ export default function VideoUploadScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <Text style={[styles.title, { color: theme.text }]}>Sign Language Translator</Text>
+      <Text style={[styles.title, { color: theme.text }]}>{t('app.name')}</Text>
       <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-        Record a video with 3-5 signs to translate into a phrase
+        {t('video.record')}
       </Text>
       
       {/* Video Preview */}
@@ -403,7 +405,7 @@ export default function VideoUploadScreen() {
             {showLandscapeGuide && <LandscapeGuide />}
             <Camera size={48} color={theme.textSecondary} />
             <Text style={[styles.placeholderText, { color: theme.textSecondary }]}>
-              No video selected
+              {t('video.upload')}
             </Text>
           </View>
         )}
@@ -416,7 +418,7 @@ export default function VideoUploadScreen() {
           onPress={recordVideo}
         >
           <Camera size={24} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.buttonText}>Record Video</Text>
+          <Text style={styles.buttonText}>{t('video.record')}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -424,7 +426,7 @@ export default function VideoUploadScreen() {
           onPress={pickVideo}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.text }]}>
-            Choose from Library
+            {t('video.upload')}
           </Text>
         </TouchableOpacity>
         
@@ -439,7 +441,7 @@ export default function VideoUploadScreen() {
             ) : (
               <>
                 <MessageSquare size={24} color="#fff" style={styles.buttonIcon} />
-                <Text style={styles.buttonText}>Translate Phrase</Text>
+                <Text style={styles.buttonText}>{t('video.processing')}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -448,57 +450,27 @@ export default function VideoUploadScreen() {
 
       {/* Prediction Modal */}
       <Modal
+        visible={modalVisible}
         animationType="slide"
         transparent={true}
-        visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
+        <View style={[styles.modalContainer, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
-            <CheckCircle2 size={48} color={theme.success} />
             <Text style={[styles.modalTitle, { color: theme.text }]}>
-              Translation Complete!
+              {t('video.success')}
             </Text>
-            
-            {/* Complete Phrase */}
-            <View style={styles.phraseContainer}>
-              <Text style={[styles.phraseLabel, { color: theme.textSecondary }]}>
-                Arabic:
-              </Text>
-              <Text style={[styles.phraseText, { color: theme.text }]}>
-                {prediction?.arabicPhrase}
-              </Text>
-              
-              <Text style={[styles.phraseLabel, { color: theme.textSecondary }]}>
-                French:
-              </Text>
-              <Text style={[styles.phraseText, { color: theme.text }]}>
-                {prediction?.frenchPhrase}
-              </Text>
-            </View>
-            
-            <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalButton, { backgroundColor: theme.primary }]}
-                onPress={() => speakText('ar')}
-              >
-                <Text style={styles.modalButtonText}>Listen in Arabic</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.modalButton, { backgroundColor: theme.secondary }]}
-                onPress={() => speakText('fr')}
-              >
-                <Text style={styles.modalButtonText}>Listen in French</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.modalButton, { backgroundColor: theme.error }]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
+            {prediction && (
+              <View style={styles.predictionContainer}>
+                {prediction.signs.map((sign, index) => renderSign(sign, index))}
+              </View>
+            )}
+            <TouchableOpacity
+              style={[styles.closeModalButton, { backgroundColor: theme.primary }]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeModalButtonText}>{t('app.close')}</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -713,5 +685,20 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.medium,
     textAlign: 'center',
     padding: spacing.l,
+  },
+  predictionContainer: {
+    width: '100%',
+    marginBottom: spacing.l,
+  },
+  closeModalButton: {
+    paddingVertical: spacing.m,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.medium,
+    alignItems: 'center',
+  },
+  closeModalButtonText: {
+    color: '#fff',
+    fontSize: typography.fontSizes.m,
+    fontFamily: typography.fontFamily.medium,
   },
 });
