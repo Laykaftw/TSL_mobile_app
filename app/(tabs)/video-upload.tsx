@@ -1,9 +1,30 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, Modal, Alert, ActivityIndicator, Dimensions, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Platform,
+  Modal,
+  Alert,
+  ActivityIndicator,
+  Dimensions,
+  Animated,
+} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useTheme } from '@/context/ThemeContext';
-import { Upload, Camera, CheckCircle2, X, Hand, Play, MessageSquare } from 'lucide-react-native';
+import {
+  Upload,
+  Camera,
+  CheckCircle2,
+  X,
+  Hand,
+  Play,
+  MessageSquare,
+  Volume2,
+} from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { api, PredictionResponse } from '@/services/api';
 import * as Speech from 'expo-speech';
@@ -55,13 +76,19 @@ const LandscapeGuide = () => {
   });
 
   return (
-    <View style={styles.landscapeGuide}>
-      <Animated.View style={[styles.phoneIcon, { transform: [{ rotate: spin }] }]}>
-        <Ionicons name="phone-portrait" size={40} color={theme.text} />
-      </Animated.View>
-      <Text style={[styles.landscapeText, { color: theme.text }]}>
-        Please rotate your device to landscape mode
-      </Text>
+    <View
+      style={[styles.landscapeGuide, { backgroundColor: 'rgba(0,0,0,0.5)' }]}
+    >
+      <View style={styles.landscapeContent}>
+        <Animated.View
+          style={[styles.phoneIcon, { transform: [{ rotate: spin }] }]}
+        >
+          <Ionicons name="phone-portrait" size={40} color={theme.text} />
+        </Animated.View>
+        <Text style={[styles.landscapeText, { color: theme.text }]}>
+          Please rotate your device to landscape mode
+        </Text>
+      </View>
     </View>
   );
 };
@@ -73,7 +100,8 @@ export default function VideoUploadScreen() {
   const [prediction, setPrediction] = useState<PhraseResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
+  const [mediaPermission, requestMediaPermission] =
+    MediaLibrary.usePermissions();
   const [isRecording, setIsRecording] = useState(false);
   const [showLandscapeGuide, setShowLandscapeGuide] = useState(true);
   const videoRef = useRef<Video>(null);
@@ -83,9 +111,11 @@ export default function VideoUploadScreen() {
   const requestPermissions = async () => {
     if (Platform.OS !== 'web') {
       try {
-        const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-        const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-        
+        const cameraPermission =
+          await ImagePicker.requestCameraPermissionsAsync();
+        const mediaLibraryPermission =
+          await MediaLibrary.requestPermissionsAsync();
+
         if (!cameraPermission.granted) {
           Alert.alert(
             'Camera Permission Required',
@@ -94,7 +124,7 @@ export default function VideoUploadScreen() {
           );
           return false;
         }
-        
+
         if (!mediaLibraryPermission.granted) {
           Alert.alert(
             'Media Library Permission Required',
@@ -103,7 +133,7 @@ export default function VideoUploadScreen() {
           );
           return false;
         }
-        
+
         return true;
       } catch (error) {
         console.error('Error requesting permissions:', error);
@@ -116,12 +146,15 @@ export default function VideoUploadScreen() {
   // Pick video from library
   const pickVideo = async () => {
     const hasPermission = await requestPermissions();
-    
+
     if (!hasPermission) {
-      Alert.alert('Permission Required', 'We need camera and media library permissions to upload videos');
+      Alert.alert(
+        'Permission Required',
+        'We need camera and media library permissions to upload videos'
+      );
       return;
     }
-    
+
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
@@ -132,7 +165,7 @@ export default function VideoUploadScreen() {
         videoExportPreset: ImagePicker.VideoExportPreset.HighestQuality,
         videoQuality: 1,
       });
-      
+
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setVideo(result.assets[0].uri);
         if (Platform.OS !== 'web') {
@@ -144,17 +177,20 @@ export default function VideoUploadScreen() {
       Alert.alert('Error', 'Failed to pick video. Please try again.');
     }
   };
-  
+
   // Record video using camera
   const recordVideo = async () => {
     setShowLandscapeGuide(false); // Hide guide when starting to record
     const hasPermission = await requestPermissions();
-    
+
     if (!hasPermission) {
-      Alert.alert('Permission Required', 'We need camera and media library permissions to record videos');
+      Alert.alert(
+        'Permission Required',
+        'We need camera and media library permissions to record videos'
+      );
       return;
     }
-    
+
     try {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
@@ -162,11 +198,12 @@ export default function VideoUploadScreen() {
         aspect: [16, 9],
         quality: 1,
         videoMaxDuration: 15,
-        videoExportPreset: Platform.OS === 'ios' || Platform.OS === 'web'
-                             ? ImagePicker.VideoExportPreset.H264_1280x720 // Use specific 1280x720 preset
-                             : ImagePicker.VideoExportPreset.HighestQuality, // Fallback for other platforms
+        videoExportPreset:
+          Platform.OS === 'ios' || Platform.OS === 'web'
+            ? ImagePicker.VideoExportPreset.H264_1280x720 // Use specific 1280x720 preset
+            : ImagePicker.VideoExportPreset.HighestQuality, // Fallback for other platforms
       });
-      
+
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setVideo(result.assets[0].uri);
         if (Platform.OS !== 'web') {
@@ -204,48 +241,51 @@ export default function VideoUploadScreen() {
   // Process video with AI
   const processVideo = async () => {
     if (!video) return;
-    
+
     try {
       setIsProcessing(true);
-      
+
       // Create FormData
       const formData = new FormData();
-      
+
       // For Android/iOS, we can append the URI directly
       formData.append('file', {
         uri: video,
         type: 'video/mp4',
-        name: 'video.mp4'
+        name: 'video.mp4',
       } as any);
-      
+
       // Add metadata about the video
-      formData.append('metadata', JSON.stringify({
-        timestamp: new Date().toISOString(),
-        platform: Platform.OS,
-        version: Platform.Version,
-        quality: 'highest',
-        aspect: '4:3',
-        maxDuration: 15,
-      }));
-      
+      formData.append(
+        'metadata',
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          platform: Platform.OS,
+          version: Platform.Version,
+          quality: 'highest',
+          aspect: '4:3',
+          maxDuration: 15,
+        })
+      );
+
       // Send to backend for prediction
       const result = await api.predictVideo(formData);
-      
+
       console.log('Raw API Response:', result);
-      
+
       // Process each detected sign and get translations
       const processedSigns = result.detected_signs.map((sign) => {
         const translations = signTranslations[sign.predicted_class];
         console.log('Processing sign:', {
           predicted_class: sign.predicted_class,
           confidence_score: sign.confidence_score,
-          translations: translations
+          translations: translations,
         });
         return {
           text: sign.predicted_class,
           confidence: sign.confidence_score,
           arabic: translations?.arabic,
-          french: translations?.french
+          french: translations?.french,
         };
       });
 
@@ -256,7 +296,7 @@ export default function VideoUploadScreen() {
         .map((sign: SignPrediction) => sign.arabic)
         .filter(Boolean)
         .join(' ');
-      
+
       const frenchPhrase = processedSigns
         .map((sign: SignPrediction) => sign.french)
         .filter(Boolean)
@@ -264,16 +304,16 @@ export default function VideoUploadScreen() {
 
       console.log('Generated Phrases:', {
         arabic: arabicPhrase,
-        french: frenchPhrase
+        french: frenchPhrase,
       });
 
       setPrediction({
         signs: processedSigns,
         arabicPhrase,
-        frenchPhrase
+        frenchPhrase,
       });
       setModalVisible(true);
-      
+
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
@@ -284,19 +324,27 @@ export default function VideoUploadScreen() {
       setIsProcessing(false);
     }
   };
-  
+
   // Speak the prediction
-  const speakText = (language: 'ar' | 'fr') => {
+  const speakText = async (language: 'ar' | 'fr') => {
     if (!prediction) return;
-    
+
     const text = language === 'ar' ? prediction.arabicPhrase : prediction.frenchPhrase;
     if (!text) return;
 
-    Speech.speak(text, {
-      language: language,
-      pitch: 1.0,
-      rate: 0.9,
-    });
+    // Split the text into words
+    const words = text.split(' ');
+    
+    // Speak each word with a pause
+    for (const word of words) {
+      await Speech.speak(word, {
+        language: language,
+        pitch: 1.0,
+        rate: 0.8, // Slightly slower rate for more natural speech
+      });
+      // Add a small pause between words
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
   };
 
   // Render individual sign
@@ -313,13 +361,21 @@ export default function VideoUploadScreen() {
           {sign.french}
         </Text>
         <View style={styles.confidenceContainer}>
-          <View style={[styles.confidenceBar, { 
-            width: `${sign.confidence * 100}%`,
-            backgroundColor: sign.confidence > 0.7 ? theme.success : 
-                           sign.confidence > 0.4 ? theme.warning : 
-                           theme.error 
-          }]} />
-          <Text style={[styles.confidenceText, { color: theme.textSecondary }]}>
+          <View
+            style={[
+              styles.confidenceBar,
+              {
+                width: `${sign.confidence * 100}%`,
+                backgroundColor:
+                  sign.confidence > 0.7
+                    ? theme.success
+                    : sign.confidence > 0.4
+                    ? theme.warning
+                    : theme.error,
+              },
+            ]}
+          />
+          <Text style={styles.confidenceText}>
             Confidence: {(sign.confidence * 100).toFixed(1)}%
           </Text>
         </View>
@@ -346,7 +402,7 @@ export default function VideoUploadScreen() {
         <Text style={[styles.errorText, { color: theme.text }]}>
           Please grant camera permissions to use this feature
         </Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.button, { backgroundColor: theme.primary }]}
           onPress={requestPermissions}
         >
@@ -363,18 +419,20 @@ export default function VideoUploadScreen() {
       <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
         {t('video.record')}
       </Text>
-      
+
       {/* Video Preview */}
-      <View style={[
-        styles.previewContainer, 
-        { 
-          backgroundColor: theme.card,
-          borderColor: theme.border,
-          ...shadows.medium 
-        }
-      ]}>
+      <View
+        style={[
+          styles.previewContainer,
+          {
+            backgroundColor: theme.card,
+            borderColor: theme.border,
+            ...shadows.medium,
+          },
+        ]}
+      >
         {video ? (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.videoContainer}
             onPress={toggleVideoPlayback}
             activeOpacity={0.8}
@@ -393,8 +451,11 @@ export default function VideoUploadScreen() {
                 <Play size={40} color="#fff" />
               </View>
             )}
-            <TouchableOpacity 
-              style={[styles.closeButton, { backgroundColor: 'rgba(0,0,0,0.6)' }]}
+            <TouchableOpacity
+              style={[
+                styles.closeButton,
+                { backgroundColor: 'rgba(0,0,0,0.6)' },
+              ]}
               onPress={resetState}
             >
               <X size={20} color="#fff" />
@@ -404,24 +465,26 @@ export default function VideoUploadScreen() {
           <View style={styles.placeholderContent}>
             {showLandscapeGuide && <LandscapeGuide />}
             <Camera size={48} color={theme.textSecondary} />
-            <Text style={[styles.placeholderText, { color: theme.textSecondary }]}>
+            <Text
+              style={[styles.placeholderText, { color: theme.textSecondary }]}
+            >
               {t('video.upload')}
             </Text>
           </View>
         )}
       </View>
-      
+
       {/* Action Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.button, { backgroundColor: theme.primary }]}
           onPress={recordVideo}
         >
           <Camera size={24} color="#fff" style={styles.buttonIcon} />
           <Text style={styles.buttonText}>{t('video.record')}</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={[styles.secondaryButton, { borderColor: theme.border }]}
           onPress={pickVideo}
         >
@@ -429,9 +492,9 @@ export default function VideoUploadScreen() {
             {t('video.upload')}
           </Text>
         </TouchableOpacity>
-        
+
         {video && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.processButton, { backgroundColor: theme.success }]}
             onPress={processVideo}
             disabled={isProcessing}
@@ -440,7 +503,11 @@ export default function VideoUploadScreen() {
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <MessageSquare size={24} color="#fff" style={styles.buttonIcon} />
+                <MessageSquare
+                  size={24}
+                  color="#fff"
+                  style={styles.buttonIcon}
+                />
                 <Text style={styles.buttonText}>{t('video.processing')}</Text>
               </>
             )}
@@ -455,7 +522,12 @@ export default function VideoUploadScreen() {
         transparent={true}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={[styles.modalContainer, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+        <View
+          style={[
+            styles.modalContainer,
+            { backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+          ]}
+        >
           <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
             <Text style={[styles.modalTitle, { color: theme.text }]}>
               {t('video.success')}
@@ -463,10 +535,29 @@ export default function VideoUploadScreen() {
             {prediction && (
               <View style={styles.predictionContainer}>
                 {prediction.signs.map((sign, index) => renderSign(sign, index))}
+                <View style={styles.speechButtons}>
+                  <TouchableOpacity
+                    style={[styles.speechButton, { backgroundColor: theme.primary }]}
+                    onPress={() => speakText('ar')}
+                  >
+                    <Volume2 size={24} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}>{t('app.speakArabic')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.speechButton, { backgroundColor: theme.primary }]}
+                    onPress={() => speakText('fr')}
+                  >
+                    <Volume2 size={24} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}>{t('app.speakFrench')}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             )}
             <TouchableOpacity
-              style={[styles.closeModalButton, { backgroundColor: theme.primary }]}
+              style={[
+                styles.closeModalButton,
+                { backgroundColor: theme.primary },
+              ]}
               onPress={() => setModalVisible(false)}
             >
               <Text style={styles.closeModalButtonText}>{t('app.close')}</Text>
@@ -541,12 +632,13 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.medium,
   },
   buttonIcon: {
-    marginRight: spacing.s,
+    marginRight: spacing.xs,
   },
   buttonText: {
     color: '#fff',
     fontSize: typography.fontSizes.m,
     fontFamily: typography.fontFamily.medium,
+    textAlign: 'center',
   },
   secondaryButton: {
     paddingVertical: spacing.m,
@@ -644,6 +736,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontSize: typography.fontSizes.s,
     fontFamily: typography.fontFamily.medium,
+    color: '#000000',
+    textShadowColor: 'rgba(255, 255, 255, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   modalButtons: {
     width: '100%',
@@ -666,10 +762,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.8)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
+    pointerEvents: 'none',
+  },
+  landscapeContent: {
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    padding: spacing.l,
+    borderRadius: borderRadius.medium,
+    alignItems: 'center',
   },
   phoneIcon: {
     marginBottom: spacing.m,
@@ -700,5 +802,22 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: typography.fontSizes.m,
     fontFamily: typography.fontFamily.medium,
+  },
+  speechButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: spacing.m,
+    gap: spacing.s,
+    paddingHorizontal: spacing.s,
+  },
+  speechButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.m,
+    paddingHorizontal: spacing.s,
+    borderRadius: borderRadius.medium,
+    gap: spacing.xs,
   },
 });

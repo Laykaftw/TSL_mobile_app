@@ -90,6 +90,8 @@ const translations = {
     'app.challenge': 'Challenge',
     'app.dictionary': 'Dictionary',
     'app.close': 'Close',
+    'app.speakArabic': 'Speak Arabic',
+    'app.speakFrench': 'Speak French',
     
     // Video Upload
     'video.record': 'Record Video',
@@ -120,6 +122,8 @@ const translations = {
     'app.challenge': 'Défi',
     'app.dictionary': 'Dictionnaire',
     'app.close': 'Fermer',
+    'app.speakArabic': 'Parler en Arabe',
+    'app.speakFrench': 'Parler en Français',
     
     // Video Upload
     'video.record': 'Enregistrer une Vidéo',
@@ -150,6 +154,8 @@ const translations = {
     'app.challenge': 'تحدي',
     'app.dictionary': 'قاموس',
     'app.close': 'إغلاق',
+    'app.speakArabic': 'تكلم بالعربية',
+    'app.speakFrench': 'تكلم بالفرنسية',
     
     // Video Upload
     'video.record': 'تسجيل فيديو',

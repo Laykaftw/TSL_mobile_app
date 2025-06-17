@@ -80,6 +80,11 @@ export default function DailyChallengeScreen() {
 
   const loadDailySign = async () => {
     try {
+      setIsLoading(true);
+      
+      // Ensure CSV file exists first
+      await ensureCSVExists();
+      
       // Get last update date
       const lastUpdate = await AsyncStorage.getItem('lastDailySignUpdate');
       const today = new Date().toDateString();
@@ -95,21 +100,41 @@ export default function DailyChallengeScreen() {
         const storedSign = await AsyncStorage.getItem('dailySign');
         if (storedSign) {
           setDailySign(JSON.parse(storedSign));
+        } else {
+          // If no stored sign, get a new one
+          const newSign = await getRandomSign();
+          await AsyncStorage.setItem('dailySign', JSON.stringify(newSign));
+          await AsyncStorage.setItem('lastDailySignUpdate', today);
+          setDailySign(newSign);
         }
       }
     } catch (error) {
       console.error('Error loading daily sign:', error);
-      Alert.alert('Error', 'Failed to load daily challenge');
+      Alert.alert(
+        'Error',
+        'Failed to load daily challenge. Please try again.',
+        [{ text: 'OK', onPress: () => setIsLoading(false) }]
+      );
     }
   };
 
   const getRandomSign = async (): Promise<Sign> => {
     try {
-      const csvPath = await getCSVPath();
+      const csvPath = await ensureCSVExists();
       const csvContent = await FileSystem.readAsStringAsync(csvPath);
       const lines = csvContent.split('\n').slice(1); // Skip header
+      
+      if (lines.length === 0) {
+        throw new Error('No signs found in CSV file');
+      }
+      
       const randomIndex = Math.floor(Math.random() * lines.length);
       const [label, arabic, french, video] = lines[randomIndex].split(',');
+      
+      if (!label || !arabic || !french || !video) {
+        throw new Error('Invalid sign data in CSV file');
+      }
+      
       return { label, arabic, french, video };
     } catch (error) {
       console.error('Error getting random sign:', error);
