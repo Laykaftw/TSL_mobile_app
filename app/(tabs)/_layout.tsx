@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Camera, Upload, BookOpenText, Calendar, MessageSquarePlus, Settings } from 'lucide-react-native';
+import { Camera, Upload, BookOpenText, Calendar, MessageSquarePlus, Settings, Layers } from 'lucide-react-native';
 import { Platform } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { typography } from '@/utils/theme';
@@ -47,6 +47,14 @@ export default function TabLayout() {
         options={{
           title: t('video.upload'),
           tabBarIcon: ({ color }) => <Upload size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="phrase-composer"
+        options={{
+          title: t('app.composer'),
+          tabBarIcon: ({ color, size }) => <Layers size={size} color={color} />,
+          headerShown: true,
         }}
       />
       <Tabs.Screen

@@ -13,6 +13,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import * as SplashScreen from 'expo-splash-screen';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,13 +39,15 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          <Slot />
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        </LanguageProvider>
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <Slot />
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          </LanguageProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

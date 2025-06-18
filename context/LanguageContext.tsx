@@ -92,6 +92,7 @@ const translations = {
     'app.close': 'Close',
     'app.speakArabic': 'Speak Arabic',
     'app.speakFrench': 'Speak French',
+    'app.composer': 'Composer',
     
     // Video Upload
     'video.record': 'Record Video',
@@ -99,6 +100,15 @@ const translations = {
     'video.processing': 'Processing...',
     'video.error': 'Error processing video',
     'video.success': 'Video processed successfully',
+    
+    // Phrase Composer
+    'phrase.composed': 'Composed Phrase',
+    'phrase.empty': 'No signs added yet. Tap on signs below to compose your phrase.',
+    'phrase.play': 'Play',
+    'phrase.playing': 'Playing...',
+    'phrase.speak': 'Speak',
+    'phrase.clear': 'Clear',
+    'phrase.available': 'Available Signs',
     
     // Settings
     'settings.language': 'Language',
@@ -124,6 +134,7 @@ const translations = {
     'app.close': 'Fermer',
     'app.speakArabic': 'Parler en Arabe',
     'app.speakFrench': 'Parler en Français',
+    'app.composer': 'Composeur',
     
     // Video Upload
     'video.record': 'Enregistrer une Vidéo',
@@ -131,6 +142,15 @@ const translations = {
     'video.processing': 'Traitement en cours...',
     'video.error': 'Erreur de traitement de la vidéo',
     'video.success': 'Vidéo traitée avec succès',
+    
+    // Phrase Composer
+    'phrase.composed': 'Phrase Composée',
+    'phrase.empty': 'Aucun signe ajouté. Appuyez sur les signes ci-dessous pour composer votre phrase.',
+    'phrase.play': 'Jouer',
+    'phrase.playing': 'En cours...',
+    'phrase.speak': 'Parler',
+    'phrase.clear': 'Effacer',
+    'phrase.available': 'Signes Disponibles',
     
     // Settings
     'settings.language': 'Langue',
@@ -156,6 +176,7 @@ const translations = {
     'app.close': 'إغلاق',
     'app.speakArabic': 'تكلم بالعربية',
     'app.speakFrench': 'تكلم بالفرنسية',
+    'app.composer': 'منشئ الجمل',
     
     // Video Upload
     'video.record': 'تسجيل فيديو',
@@ -163,6 +184,15 @@ const translations = {
     'video.processing': 'جاري المعالجة...',
     'video.error': 'خطأ في معالجة الفيديو',
     'video.success': 'تمت معالجة الفيديو بنجاح',
+    
+    // Phrase Composer
+    'phrase.composed': 'الجملة المؤلفة',
+    'phrase.empty': 'لم يتم إضافة أي إشارات بعد. اضغط على الإشارات أدناه لتأليف جملتك.',
+    'phrase.play': 'تشغيل',
+    'phrase.playing': 'جاري التشغيل...',
+    'phrase.speak': 'تكلم',
+    'phrase.clear': 'مسح',
+    'phrase.available': 'الإشارات المتاحة',
     
     // Settings
     'settings.language': 'اللغة',
