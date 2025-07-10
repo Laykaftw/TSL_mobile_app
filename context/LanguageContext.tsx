@@ -93,6 +93,7 @@ const translations = {
     'app.speakArabic': 'Speak Arabic',
     'app.speakFrench': 'Speak French',
     'app.composer': 'Composer',
+    'app.realTime': 'Real Time',
     
     // Video Upload
     'video.record': 'Record Video',
@@ -135,6 +136,7 @@ const translations = {
     'app.speakArabic': 'Parler en Arabe',
     'app.speakFrench': 'Parler en Français',
     'app.composer': 'Composeur',
+    'app.realTime': 'Temps Réel',
     
     // Video Upload
     'video.record': 'Enregistrer une Vidéo',
@@ -177,6 +179,7 @@ const translations = {
     'app.speakArabic': 'تكلم بالعربية',
     'app.speakFrench': 'تكلم بالفرنسية',
     'app.composer': 'منشئ الجمل',
+    'app.realTime': 'الوقت الفعلي',
     
     // Video Upload
     'video.record': 'تسجيل فيديو',

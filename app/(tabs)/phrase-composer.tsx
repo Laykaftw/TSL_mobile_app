@@ -7,6 +7,7 @@ import {
   FlatList,
   Dimensions,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import DraggableFlatList, { 
@@ -240,76 +241,83 @@ export default function PhraseComposerScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Phrase Display */}
-      <View style={styles.phraseSection}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>
-          {t('phrase.composed')}
-        </Text>
-        
-        {selectedSigns.length === 0 ? (
-          <View style={[styles.emptyPhrase, { backgroundColor: theme.card }]}>
-            <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-              {t('phrase.empty')}
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.selectedSignsContainer}>
-            <DraggableFlatList
-              data={selectedSigns}
-              onDragEnd={handleDragEnd}
-              keyExtractor={(item) => item.key}
-              renderItem={renderSelectedSign}
-              contentContainerStyle={styles.draggableContainer}
-            />
-          </View>
-        )}
-
-        {selectedSigns.length > 0 && (
-          <View style={styles.phraseActions}>
-            <TouchableOpacity
-              style={[
-                styles.phraseButton, 
-                { 
-                  backgroundColor: isPlayingPhrase ? theme.success : theme.primary,
-                  opacity: isPlayingPhrase ? 0.7 : 1,
-                }
-              ]}
-              onPress={playPhrase}
-              disabled={isPlayingPhrase}
-            >
-              <Play size={20} color="#fff" style={styles.buttonIcon} />
-              <Text style={styles.buttonText}>
-                {isPlayingPhrase ? t('phrase.playing') : t('phrase.play')}
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={true}
+      >
+        {/* Phrase Display */}
+        <View style={styles.phraseSection}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            {t('phrase.composed')}
+          </Text>
+          
+          {selectedSigns.length === 0 ? (
+            <View style={[styles.emptyPhrase, { backgroundColor: theme.card }]}>
+              <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
+                {t('phrase.empty')}
               </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[styles.phraseButton, { backgroundColor: theme.error }]}
-              onPress={clearPhrase}
-              disabled={isPlayingPhrase}
-            >
+            </View>
+          ) : (
+            <View style={styles.selectedSignsContainer}>
+              <DraggableFlatList
+                data={selectedSigns}
+                onDragEnd={handleDragEnd}
+                keyExtractor={(item) => item.key}
+                renderItem={renderSelectedSign}
+                contentContainerStyle={styles.draggableContainer}
+              />
+            </View>
+          )}
+
+          {selectedSigns.length > 0 && (
+            <View style={styles.phraseActions}>
+              <TouchableOpacity
+                style={[
+                  styles.phraseButton, 
+                  { 
+                    backgroundColor: isPlayingPhrase ? theme.success : theme.primary,
+                    opacity: isPlayingPhrase ? 0.7 : 1,
+                  }
+                ]}
+                onPress={playPhrase}
+                disabled={isPlayingPhrase}
+              >
+                <Play size={20} color="#fff" style={styles.buttonIcon} />
+                <Text style={styles.buttonText}>
+                  {isPlayingPhrase ? t('phrase.playing') : t('phrase.play')}
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[styles.phraseButton, { backgroundColor: theme.error }]}
+                onPress={clearPhrase}
+                disabled={isPlayingPhrase}
+              >
               <Trash2 size={20} color="#fff" style={styles.buttonIcon} />
               <Text style={styles.buttonText}>{t('phrase.clear')}</Text>
             </TouchableOpacity>
           </View>
         )}
-      </View>
+        </View>
 
-      {/* Available Signs */}
-      <View style={styles.signsSection}>
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>
-          {t('phrase.available')}
-        </Text>
-        
-        <FlatList
-          data={availableSigns}
-          renderItem={renderSignItem}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          scrollEnabled={false}
-          contentContainerStyle={styles.signsGrid}
-        />
-      </View>
+        {/* Available Signs */}
+        <View style={styles.signsSection}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            {t('phrase.available')}
+          </Text>
+          
+          <FlatList
+            data={availableSigns}
+            renderItem={renderSignItem}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
+            contentContainerStyle={styles.signsGrid}
+          />
+        </View>
+      </ScrollView>
 
       {/* Global Video Popup */}
       {showVideoPopup && (
@@ -364,6 +372,13 @@ export default function PhraseComposerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'transparent',
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     padding: spacing.m,
   },
   phraseSection: {

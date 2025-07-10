@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const API_URL = 'http://192.168.1.112:8000'; 
+const API_URL = 'http://192.168.73.198:8000'; 
 
 export interface PredictionResponse {
   detected_signs: Array<{

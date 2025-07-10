@@ -43,6 +43,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="real-time-redo"
+        options={{
+          title: t('app.realTime'),
+          tabBarIcon: ({ color }) => <Camera size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="video-upload"
         options={{
           title: t('video.upload'),
